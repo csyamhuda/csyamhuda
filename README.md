@@ -21,12 +21,12 @@ Here are some ideas to get you started:
 
 ## Skills
 - ### Bahasa Pemrograman 
-<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" />
-<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" />
-<img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E" />
-<img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" />
+[![My Skills](https://skillicons.dev/icons?i=html,css,js,php,laravel,mysql,postgres&theme=dark)](https://skillicons.dev)
 
 - ### Operating System
 <img src="https://img.shields.io/badge/Kali_Linux-557C94?style=for-the-badge&logo=kali-linux&logoColor=white" />
 <img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white" />
 <img src="https://img.shields.io/badge/Windows_11-0078d4?style=for-the-badge&logo=windows-11&logoColor=white" />
+
+## Connect w/ Me
+![https://www.instagram.com/mascahyodotnet](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white) ![https://x.com/mascahyonet/](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white) ![https://www.facebook.com/mascahyodotnet](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white) ![https://www.pinterest.com/mascahyodotnet](https://img.shields.io/badge/Pinterest-%23E60023.svg?&style=for-the-badge&logo=Pinterest&logoColor=white) ![https://www.youtube.com/@mascahyodotnet](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)
