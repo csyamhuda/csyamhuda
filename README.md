@@ -18,7 +18,7 @@
 ![https://www.instagram.com/mascahyodotnet](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white) ![https://x.com/mascahyonet/](https://img.shields.io/badge/X-000000?style=for-the-badge&logo=x&logoColor=white) ![https://www.facebook.com/mascahyodotnet](https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white) ![https://www.pinterest.com/mascahyodotnet](https://img.shields.io/badge/Pinterest-%23E60023.svg?&style=for-the-badge&logo=Pinterest&logoColor=white) ![https://www.youtube.com/@mascahyodotnet](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)
 
 ## My Github Stats
-![GitHub Streak](https://streak-stats.demolab.com/?user=csyamhuda&theme=github-dark)(https://git.io/streak-stats)
+![GitHub Streak](https://streak-stats.demolab.com/?user=csyamhuda&theme=github-dark)
 
 ## Play Game Now
 <picture>
