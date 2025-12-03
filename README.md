@@ -26,7 +26,7 @@
 </picture>
 
 <iframe 
-  src="https://cysmhuda.github.io/csyamhuda/index.html"
+  src="https://csyamhuda.github.io/csyamhuda/index.html"
   width="430"
   height="480"
   frameborder="0"
