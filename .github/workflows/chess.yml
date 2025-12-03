@@ -2,24 +2,20 @@ name: Deploy Chess Game
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-
-      - name: Upload chess game
+      - name: Upload game
         uses: actions/upload-pages-artifact@v1
         with:
-          path: game  # folder tempat game
+          path: game
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: actions/deploy-pages@v1
