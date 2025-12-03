@@ -25,9 +25,9 @@
   <img alt="pacman contribution graph" src="https://raw.githubusercontent.com/csyamhuda/csyamhuda/output/pacman-contribution-graph.svg">
 </picture>
 
-<iframe 
+<!-- <iframe 
   src="https://csyamhuda.github.io/game/"
   width="430"
   height="480"
   frameborder="0"
-></iframe>
+></iframe> -->
