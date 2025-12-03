@@ -1,149 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Retro Atari Chess (Fixed)</title>
-  <style>
-    :root{--green:#00ff55;--bg:#000}
-    body {
-      background: var(--bg);
-      color: var(--green);
-      font-family: "Press Start 2P", monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      margin: 0;
-    }
-    #board { width: 420px; image-rendering: pixelated; }
-  </style>
-
-  <!-- FONT -->
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <!-- CHESSBOARD -->
+  <title>Chess Game</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+  <style>
+    body { display: flex; justify-content: center; padding: 40px; background: #111; color: white; }
+  </style>
 </head>
 <body>
+  <div id="board" style="width: 400px"></div>
 
-<h1>RETRO ATARI CHESS</h1>
-<div id="board"></div>
-<div id="status" style="margin-top:12px;font-size:10px;"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
 
-<!-- CHESS ENGINE + BOARD LIBS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+  <script>
+    var game = new Chess();
 
-<script>
-// ------------------ AUDIO SYSTEM ------------------
-var AudioContext = window.AudioContext || window.webkitAudioContext;
-var audioCtx = AudioContext ? new AudioContext() : null;
+    var board = Chessboard('board', {
+      draggable: true,
+      position: 'start',
+      onDrop: function(source, target) {
+        var move = game.move({ from: source, to: target, promotion: 'q' })
 
-function blip(freq, duration, type="square"){
-  if(!audioCtx) return;
-  let o = audioCtx.createOscillator();
-  let g = audioCtx.createGain();
-  o.frequency.value = freq;
-  o.type = type;
-  g.gain.value = 0.08;
-  o.connect(g); g.connect(audioCtx.destination);
-  let now = audioCtx.currentTime;
-  o.start(now);
-  g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-  o.stop(now + duration + 0.02);
-}
-
-function fxUser(){ blip(1200,.07); setTimeout(()=>blip(900,.06),90); }
-function fxAI(){ blip(600,.07,"triangle"); }
-
-// ------------------ CHESS CORE ------------------
-var game = new Chess();
-var board;
-
-function updateStatus(){
-  let s = document.getElementById("status");
-  if(game.in_checkmate()) s.innerText = "Checkmate";
-  else if(game.in_draw()) s.innerText = "Draw";
-  else s.innerText = (game.turn()==='w'?"White":"Black")+" to move";
-}
-
-board = Chessboard("board",{
-  draggable:true,
-  position:"start",
-  onDrop:(s,t)=>{
-    let move = game.move({from:s,to:t,promotion:'q'});
-    if(!move) return "snapback";
-    fxUser(); updateStatus();
-    setTimeout(()=> AI_move(),350);
-  }
-});
-
-updateStatus();
-
-// ------------------ STOCKFISH AI ------------------
-let engine = null;
-let engineReady = false;
-let fallback = false;
-
-initEngine();
-
-function initEngine(){
-  let url = "https://cdnjs.cloudflare.com/ajax/libs/stockfish/10/stockfish.js";
-
-  try {
-    engine = new Worker(url);
-    setupEngine();
-  } catch(e){
-    fallback = true;
-  }
-}
-
-function setupEngine(){
-  engine.onmessage = (e)=>{
-    let line = (typeof e.data === "string") ? e.data : e.data.data;
-
-    if(line === "uciok") engineReady = true;
-    if(line.startsWith("bestmove")){
-      let m = line.split(" ")[1];
-      if(m && m !== "(none)"){
-        game.move({from:m.substring(0,2),to:m.substring(2,4),promotion:'q'});
-        board.position(game.fen()); fxAI(); updateStatus();
+        if (move === null) return 'snapback'
       }
-    }
-  };
-
-  engine.postMessage("uci");
-  engine.postMessage("isready");
-}
-
-// ------------------ AI MOVE ------------------
-function AI_move(){
-  if(game.game_over()) return;
-
-  if(!engineReady || fallback){
-    let moves = game.moves();
-    let m = moves[Math.floor(Math.random()*moves.length)];
-    game.move(m);
-    board.position(game.fen()); fxAI(); updateStatus();
-    return;
-  }
-
-  engine.postMessage("position fen "+game.fen());
-  engine.postMessage("go movetime 450");
-}
-
-// ------------------ AUTO-DEMO ------------------
-setTimeout(()=>{
-  let seq = ["e2e4","d7d5","e4d5"];
-  let i=0;
-  function step(){
-    if(i>=seq.length) return;
-    try{ game.move(seq[i]); board.position(game.fen()); fxAI(); updateStatus(); }catch{}
-    i++; setTimeout(step,500);
-  }
-  step();
-},900);
-
-</script>
-
+    });
+  </script>
 </body>
 </html>
