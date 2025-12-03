@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Retro Atari Chess</title>
+  <style>
+    :root{--green:#00ff55;--bg:#000}
+    html,body{height:100%;}
+    body {
+      background: var(--bg);
+      color: var(--green);
+      font-family: "Press Start 2P", monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 0;
+      padding: 28px 12px;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: var(--green);
+      text-shadow: 0 0 8px var(--green);
+      font-size: 16px;
+      margin: 6px 0 14px 0;
+    }
+
+    #stage {
+      width: 460px;
+      padding: 12px;
+      border: 4px solid var(--green);
+      box-shadow: 0 0 20px rgba(0,255,85,0.12), inset 0 0 30px rgba(0,255,85,0.02);
+      position: relative;
+      background: radial-gradient(ellipse at center, rgba(0,255,85,0.02) 0%, rgba(0,0,0,0.6) 60%);
+    }
+
+    #board {
+      width: 420px;
+      margin: 0 auto;
+      image-rendering: pixelated;
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Scanlines */
+    #stage::after{
+      content: '';
+      pointer-events: none;
+      position:absolute;left:0;right:0;top:0;bottom:0;
+      background-image: linear-gradient(rgba(0,0,0,0.08) 50%, rgba(0,0,0,0) 50%);
+      background-size: 100% 3px;
+      mix-blend-mode: multiply;
+    }
+
+    /* Glowing text */
+    .status {
+      font-size: 10px;
+      margin-top: 8px;
+      opacity: 0.9;
+    }
+
+    /* retro piece tint */
+    .white-3c85d{ background:#0b0b0b !important }
+    .black-3c85d{ background: rgba(0,170,68,0.14) !important }
+
+    footer {
+      margin-top: 12px;
+      font-size: 10px;
+      opacity: 0.6;
+    }
+
+    /* CRT vignette */
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:0.12;
+      background: radial-gradient(ellipse at center, transparent 40%, black 100%);
+    }
+
+  </style>
+
+  <!-- Retro Pixel Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+  <!-- Chessboard.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css" />
+</head>
+<body>
+
+<h1>RETRO ATARI CHESS</h1>
+<div id="stage">
+  <div id="board"></div>
+</div>
+<div class="status" id="status">Initializing...</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
+
+<script>
+  // --- Game engine ---
+  var game = new Chess();
+
+  // --- WebAudio Atari-style blips generator ---
+  var AudioContext = window.AudioContext || window.webkitAudioContext;
+  var audioCtx = AudioContext ? new AudioContext() : null;
+
+  function atariBlip(freq, duration, type, vol){
+    if(!audioCtx) return;
+    var o = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    o.type = type || 'square';
+    o.frequency.value = freq;
+    g.gain.value = vol == null ? 0.08 : vol;
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    var now = audioCtx.currentTime;
+    o.start(now);
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + (duration/1000));
+    o.stop(now + (duration/1000) + 0.02);
+  }
+
+  function playMoveSound() {
+    // two quick blips (move) then a lower confirm blip
+    atariBlip(1200, 70, 'square', 0.08);
+    setTimeout(()=> atariBlip(900, 60, 'square', 0.06), 90);
+    setTimeout(()=> atariBlip(400, 120, 'triangle', 0.07), 220);
+  }
+
+  function playAIMoveSound() {
+    atariBlip(700, 90, 'sawtooth', 0.08);
+    setTimeout(()=> atariBlip(500, 90, 'triangle', 0.06), 110);
+  }
+
+  // --- Chessboard setup ---
+  var board = null;
+  var cfg = {
+    draggable: true,
+    position: 'start',
+    onDragStart: function(source, piece, position, orientation) {
+      if (game.game_over()) return false;
+      if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+          (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+        return false;
+      }
+    },
+    onDrop: function(source, target) {
+      var move = game.move({ from: source, to: target, promotion: 'q' });
+      if (move === null) return 'snapback';
+      // user moved
+      playMoveSound();
+      updateStatus();
+      // let AI think
+      setTimeout(() => { tryAI(); }, 300);
+    },
+    onSnapEnd: function() { board.position(game.fen()); }
+  };
+
+  board = Chessboard('board', cfg);
+
+  // --- Status ---
+  function updateStatus() {
+    var statusEl = document.getElementById('status');
+    var status = '';
+    var moveColor = (game.turn() === 'b') ? 'Black' : 'White';
+    if (game.in_checkmate()) {
+      status = 'Checkmate. ' + (moveColor === 'White' ? 'Black' : 'White') + ' wins.';
+    } else if (game.in_draw()) {
+      status = 'Draw.';
+    } else {
+      status = moveColor + ' to move.';
+      if (game.in_check()) status += ' Check!';
+    }
+    statusEl.textContent = status;
+  }
+
+  updateStatus();
+
+  // --- Stockfish integration (try several fallbacks) ---
+  var engine = null;
+  var engineReady = false;
+  var useRandomFallback = false;
+
+  function initStockfish() {
+    // Attempt to instantiate stockfish as a worker. We'll try common CDN locations but gracefully fallback.
+    var tried = 0;
+    var candidates = [
+      'https://cdnjs.cloudflare.com/ajax/libs/stockfish/12.1/stockfish.js',
+      'https://raw.githubusercontent.com/niklasf/stockfish.js/master/src/stockfish.js',
+      'https://cdn.jsdelivr.net/npm/stockfish.js@latest/stockfish.js'
+    ];
+
+    function tryNext() {
+      if (tried >= candidates.length) {
+        console.warn('Stockfish not available, falling back to simple random AI');
+        engineReady = true; useRandomFallback = true; document.getElementById('status').textContent += ' (AI: basic)';
+        return;
+      }
+      var url = candidates[tried++];
+      try {
+        engine = new Worker(url);
+      } catch (e) {
+        // some hosts disallow cross-origin workers; try fetch+blob
+        fetch(url).then(r=>r.text()).then(code => {
+          var blob = new Blob([code], {type: 'application/javascript'});
+          var blobUrl = URL.createObjectURL(blob);
+          try { engine = new Worker(blobUrl); } catch(err) { tryNext(); return; }
+          setupEngine();
+        }).catch(()=> tryNext());
+        return;
+      }
+      setupEngine();
+
+      function setupEngine() {
+        engine.onmessage = function(event) {
+          var line = typeof event.data === 'string' ? event.data : event.data.data;
+          if (line === 'readyok') { engineReady = true; document.getElementById('status').textContent += ' (AI: Stockfish)'; }
+          // listen for bestmove
+          if (line.indexOf('bestmove') === 0) {
+            var parts = line.split(' ');
+            var mv = parts[1];
+            if (mv && mv !== '(none)') {
+              game.move({from: mv.substring(0,2), to: mv.substring(2,4), promotion: mv.length>4?mv[4]:'q'});
+              board.position(game.fen());
+              playAIMoveSound();
+              updateStatus();
+            }
+          }
+        };
+        engine.postMessage('uci');
+        engine.postMessage('isready');
+      }
+    }
+    tryNext();
+  }
+
+  // --- AI logic: ask engine or fallback to random legal move ---
+  function tryAI() {
+    if (game.game_over()) return;
+    if (!engineReady || useRandomFallback) {
+      // random move fallback
+      var moves = game.moves();
+      if (moves.length === 0) return;
+      var m = moves[Math.floor(Math.random()*moves.length)];
+      game.move(m);
+      board.position(game.fen());
+      playAIMoveSound();
+      updateStatus();
+      return;
+    }
+    // use engine: send current fen and ask for bestmove
+    engine.postMessage('position fen ' + game.fen());
+    // limit time a bit to keep retro pace
+    engine.postMessage('go movetime 500');
+  }
+
+  // --- Auto-visiting AI: when page loads, AI will make a few demonstration moves to "visit" profile ---
+  function aiVisitProfileDemo() {
+    // small demo moves to show off AI when someone opens the page
+    var demo = [ 'e2e4', 'd7d5', 'e4d5' ];
+    var i=0;
+    function step() {
+      if (i>=demo.length) return;
+      try { game.move(demo[i]); board.position(game.fen()); playAIMoveSound(); updateStatus(); } catch(e){}
+      i++;
+      setTimeout(step, 600);
+    }
+    setTimeout(step, 900);
+  }
+
+  // --- Initialize everything ---
+  // Fade-in
+  document.body.style.opacity = 0;
+  setTimeout(()=>{ document.body.style.transition = '1.0s'; document.body.style.opacity = 1; }, 150);
+
+  // Init engine then demo visit
+  initStockfish();
+  setTimeout(()=>{ aiVisitProfileDemo(); }, 1200);
+
+  // expose for debugging
+  window._retroChess = { game: game, board: board };
+
+</script>
+
+<footer>Atari Sounds • Stockfish (if available) • Retro visuals</footer>
+</body>
+</html>

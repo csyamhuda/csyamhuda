@@ -24,3 +24,10 @@
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/csyamhuda/csyamhuda/output/pacman-contribution-graph.svg">
   <img alt="pacman contribution graph" src="https://raw.githubusercontent.com/csyamhuda/csyamhuda/output/pacman-contribution-graph.svg">
 </picture>
+
+<iframe 
+  src="https://csyamhuda.github.io/<repo>/index.html" 
+  width="420" 
+  height="460" 
+  frameborder="0">
+</iframe>
