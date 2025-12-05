@@ -2,8 +2,8 @@
 # Halloha Manteman, Apa Kabar 👋
 
 ![hallo](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbG9mb3JkeDZueWs4MWVmMmlxN3NnODJyb2RzcG1ld2d2MGZ1M3hneiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/c2lbMLWfL1mQ8/giphy.gif)
-- 🔭 I’m currently working on **[mascahyo.net](https://www.mascahyo.net)**
-- 🌱 I’m currently learning **HTML**, **CSS**, **Java Script**, **Php**, **Bootsrap**, **Laravel**, **Python**, **C/C++**, **MySQL**, **PotgreSQL** and **Cyber Security**.
+- 👷‍♂️ I’m currently working on **[mascahyo.net](https://www.mascahyo.net)**
+- 📖 I’m currently learning **HTML**, **CSS**, **Java Script**, **Php**, **Bootsrap**, **Laravel**, **Python**, **C/C++**, **MySQL**, **PotgreSQL** and **Cyber Security**.
 
 ## Skills
 - ### Bahasa Pemrograman 
