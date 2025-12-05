@@ -7,7 +7,7 @@
 
 ## Skills
 - ### Bahasa Pemrograman 
-[![My Skills](https://skillicons.dev/icons?i=html,css,js,php,python,laravel,mysql,postgres&theme=dark)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=html,css,js,bootstrap,php,python,laravel,mysql,postgres&theme=dark)](https://skillicons.dev)
 
 - ### Operating System
 <img src="https://img.shields.io/badge/Kali_Linux-557C94?style=for-the-badge&logo=kali-linux&logoColor=white" /> <img src="https://img.shields.io/badge/Linux_Mint-87CF3E?style=for-the-badge&logo=linux-mint&logoColor=white" /> <img src="https://img.shields.io/badge/Windows_11-0078d4?style=for-the-badge&logo=windows-11&logoColor=white" />
